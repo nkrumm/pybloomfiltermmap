@@ -88,6 +88,40 @@ static inline int bloomfilter_Add(BloomFilter * bf, Key * key)
 }
 __attribute__((always_inline))
 
+static inline int bloomfilter_Hash(BloomFilter * bf, Key * key)
+{
+	uint32_t (*hashfunc)(uint32_t, Key *) = _hash_char;
+    register BTYPE mod = bf->array->bits;
+    register int i;
+    register int result = 1;
+    register uint32_t hash_res;
+		
+    if (key->shash == NULL)
+        hashfunc = _hash_long;
+	
+	register uint32_t hash_res;
+	for (i = bf->num_hashes - 1; i >= 0; --i) {
+		hash_res = (*hashfunc)(bf->hash_seeds[i], key) % mod;
+	
+	return hash_res;
+}
+__attribute__((always_inline)
+
+static inline int bloomfilter_AddByHash(BloomFilter * bf, uint32_t hash_res)
+{
+    register int result = 1;
+	if (result && !mbarray_Test(bf->array, hash_res)) {
+		result = 0;
+	}
+	if (mbarray_Set(bf->array, hash_res)) {
+		return 2;
+	}
+    if (!result && bf->count_correct) {
+        bf->elem_count ++;
+    }
+    return result;
+}
+__attribute__((always_inline))
 
 static inline int bloomfilter_Test(BloomFilter * bf, Key * key)
 {
