@@ -104,9 +104,31 @@ static inline int bloomfilter_GetHash(BloomFilter * bf, Key * key, int hashnumbe
 	//	printf("hash %d is %d\n",i,  hash_res);
 	//}
 	// TODO RETURN ALL THE hash_res!!!
-	return hash_res;
+		return hash_res;
 }
 __attribute__((always_inline))
+
+static inline int bloomfilter_GetAllHashes(BloomFilter * bf, Key * key, int * out_hashes)
+{
+	uint32_t (*hashfunc)(uint32_t, Key *) = _hash_char;
+    register BTYPE mod = bf->array->bits;
+    register int i;
+    register int result = 1;
+    register uint32_t hash_res;
+		
+    if (key->shash == NULL)
+        hashfunc = _hash_long;
+    
+	for (i = bf->num_hashes - 1; i >= 0; --i) {
+		out_hashes[i] = (*hashfunc)(bf->hash_seeds[i], key) % mod;
+		//printf("hash %d is %d\n",i,  hash_res);
+	}
+	//TODO more useful return value
+	return 0;
+	
+}
+__attribute__((always_inline))
+
 
 static inline int bloomfilter_AddByHash(BloomFilter * bf, int hash_res)
 {

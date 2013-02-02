@@ -6,7 +6,7 @@ __VERSION__ = VERSION
 
 cimport cbloomfilter
 cimport cpython
-
+cimport numpy as np
 import random
 import os
 import math
@@ -14,8 +14,10 @@ import errno as eno
 import array
 import zlib
 import shutil
+import numpy as np
 
 global errno
+
 
 cdef construct_mode(mode):
     result = os.O_RDONLY
@@ -221,7 +223,7 @@ cdef class BloomFilter:
         result = cbloomfilter.bloomfilter_Add(self._bf, &key)
         if result == 2:
             raise RuntimeError("Some problem occured while trying to add key.")
-        return bool(result)
+        return bool(result) 
 
     def get_hash(self, item, hashnumber):
         self._assert_open()
@@ -237,6 +239,25 @@ cdef class BloomFilter:
         if result == 2:
             raise RuntimeError("Some problem occured while trying to get hash.")
         return result
+
+    def get_all_hashes(self, item):
+        self._assert_open()
+        cdef cbloomfilter.Key key
+        if isinstance(item, str):
+            key.shash = item
+            key.nhash = len(item)
+        else:
+            key.shash = NULL
+            key.nhash = hash(item)
+
+        cdef np.ndarray out_hashes = np.zeros((self.num_hashes,), dtype = np.int32)
+        
+        result = cbloomfilter.bloomfilter_GetAllHashes(self._bf, &key, <int *> out_hashes.data )
+        
+        if result == 2:
+            raise RuntimeError("Some problem occured while trying to get hash.")
+        return out_hashes
+	
 
     def add_from_hash(self, hashres):
         self._assert_open()    

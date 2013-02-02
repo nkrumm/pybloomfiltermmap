@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 
 here = os.path.dirname(__file__)
 
@@ -46,7 +47,8 @@ if '--cython' in sys.argv:
 
 ext_modules = [Extension("mgenebloomfilter",
                          ext_files,
-                         libraries=['crypto'])]
+                         libraries=['crypto'],
+                         include_dirs =[np.get_include()])]
 
 requirements = []
 
