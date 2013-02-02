@@ -223,7 +223,7 @@ cdef class BloomFilter:
             raise RuntimeError("Some problem occured while trying to add key.")
         return bool(result)
 
-    def get_hash(self, item):
+    def get_hash(self, item, hashnumber):
         self._assert_open()
         cdef cbloomfilter.Key key
         if isinstance(item, str):
@@ -233,7 +233,7 @@ cdef class BloomFilter:
             key.shash = NULL
             key.nhash = hash(item)
         #result = cbloomfilter.bloomfilter_Add(self._bf, &key)
-        result = cbloomfilter.bloomfilter_GetHash(self._bf, &key)
+        result = cbloomfilter.bloomfilter_GetHash(self._bf, &key, hashnumber)
         if result == 2:
             raise RuntimeError("Some problem occured while trying to get hash.")
         return result

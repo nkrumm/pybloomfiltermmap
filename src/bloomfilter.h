@@ -88,20 +88,22 @@ static inline int bloomfilter_Add(BloomFilter * bf, Key * key)
 }
 __attribute__((always_inline))
 
-static inline int bloomfilter_GetHash(BloomFilter * bf, Key * key)
+static inline int bloomfilter_GetHash(BloomFilter * bf, Key * key, int hashnumber)
 {
 	uint32_t (*hashfunc)(uint32_t, Key *) = _hash_char;
     register BTYPE mod = bf->array->bits;
-    register int i;
+    //register int i;
     register int result = 1;
     register uint32_t hash_res;
 		
     if (key->shash == NULL)
         hashfunc = _hash_long;
-	
-	for (i = bf->num_hashes - 1; i >= 0; --i) {
-		hash_res = (*hashfunc)(bf->hash_seeds[i], key) % mod;
-	}
+    
+	//for (i = bf->num_hashes - 1; i >= 0; --i) {
+	hash_res = (*hashfunc)(bf->hash_seeds[hashnumber], key) % mod;
+	//	printf("hash %d is %d\n",i,  hash_res);
+	//}
+	// TODO RETURN ALL THE hash_res!!!
 	return hash_res;
 }
 __attribute__((always_inline))
