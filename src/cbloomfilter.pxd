@@ -48,6 +48,8 @@ cdef extern from "bloomfilter.h":
                                       int * hash_seeds, int num_hashes)
      void bloomfilter_Destroy(BloomFilter * bf)
      int bloomfilter_Add(BloomFilter * bf, Key * key)
+     int bloomfilter_GetHash(BloomFilter * bf, Key * key)
+     int bloomfilter_AddByHash(BloomFilter * bf, int hash_res)
      int bloomfilter_Test(BloomFilter * bf, Key * key)
      int bloomfilter_Update(BloomFilter * bf, char * data, int size)
      BloomFilter * bloomfilter_Copy_Template(BloomFilter * src, char * filename, int perms)

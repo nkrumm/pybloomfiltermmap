@@ -88,7 +88,7 @@ static inline int bloomfilter_Add(BloomFilter * bf, Key * key)
 }
 __attribute__((always_inline))
 
-static inline int bloomfilter_Hash(BloomFilter * bf, Key * key)
+static inline int bloomfilter_GetHash(BloomFilter * bf, Key * key)
 {
 	uint32_t (*hashfunc)(uint32_t, Key *) = _hash_char;
     register BTYPE mod = bf->array->bits;
@@ -99,15 +99,14 @@ static inline int bloomfilter_Hash(BloomFilter * bf, Key * key)
     if (key->shash == NULL)
         hashfunc = _hash_long;
 	
-	register uint32_t hash_res;
 	for (i = bf->num_hashes - 1; i >= 0; --i) {
 		hash_res = (*hashfunc)(bf->hash_seeds[i], key) % mod;
-	
+	}
 	return hash_res;
 }
-__attribute__((always_inline)
+__attribute__((always_inline))
 
-static inline int bloomfilter_AddByHash(BloomFilter * bf, uint32_t hash_res)
+static inline int bloomfilter_AddByHash(BloomFilter * bf, int hash_res)
 {
     register int result = 1;
 	if (result && !mbarray_Test(bf->array, hash_res)) {

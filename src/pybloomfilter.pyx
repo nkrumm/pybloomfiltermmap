@@ -49,7 +49,7 @@ cdef class BloomFilter:
     """
     cdef cbloomfilter.BloomFilter * _bf
     cdef int _closed
-
+    
     def __cinit__(self, capacity, error_rate, filename=None, perm=0755):
         cdef char * seeds
         cdef long long num_bits
@@ -218,29 +218,13 @@ cdef class BloomFilter:
         else:
             key.shash = NULL
             key.nhash = hash(item)
-
         result = cbloomfilter.bloomfilter_Add(self._bf, &key)
         if result == 2:
             raise RuntimeError("Some problem occured while trying to add key.")
         return bool(result)
-    
-	def get_hash(self, item):
-        cdef cbloomfilter.Key key
-        if isinstance(item, str):
-            key.shash = item
-            key.nhash = len(item)
-        else:
-            key.shash = NULL
-            key.nhash = hash(item)
 
-        #result = cbloomfilter.bloomfilter_Add(self._bf, &key)
-        hashresult = cbloomfilter.bloomfilter_GetHash(self._bf, &key)
-        if result == 2:
-            raise RuntimeError("Some problem occured while trying to get hash.")
-        return hashresult
-    
-    
-	def add_from_hash(self, hash):
+    def get_hash(self, item):
+        self._assert_open()
         cdef cbloomfilter.Key key
         if isinstance(item, str):
             key.shash = item
@@ -248,13 +232,19 @@ cdef class BloomFilter:
         else:
             key.shash = NULL
             key.nhash = hash(item)
-		
         #result = cbloomfilter.bloomfilter_Add(self._bf, &key)
-        hashresult = cbloomfilter.bloomfilter_GetHash(self._bf, &key)
+        result = cbloomfilter.bloomfilter_GetHash(self._bf, &key)
         if result == 2:
             raise RuntimeError("Some problem occured while trying to get hash.")
-        return hashresult  
-    
+        return result
+
+    def add_from_hash(self, hashres):
+        self._assert_open()    
+        result = cbloomfilter.bloomfilter_AddByHash(self._bf, hashres)
+        if result == 2:
+            raise RuntimeError("Some problem occured while trying to add the hash.")
+        return result  
+
     def update(self, iterable):
         self._assert_open()
         for item in iterable:
