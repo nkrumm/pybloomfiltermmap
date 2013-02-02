@@ -159,7 +159,7 @@ static inline int bloomfilter_AddByHash(BloomFilter * bf, int hash_res)
 		result = 0;
 	}
 	if (mbarray_Set(bf->array, hash_res)) {
-		return 3;
+		return 2;
 	}
     if (!result && bf->count_correct) {
         bf->elem_count ++;
