@@ -257,8 +257,15 @@ cdef class BloomFilter:
         if result == 2:
             raise RuntimeError("Some problem occured while trying to get hash.")
         return out_hashes
+		
+    def add_from_all_hashes(self, np.ndarray[int, ndim=1] hashes):
+        self._assert_open()
+        result = cbloomfilter.bloomfilter_AddByAllHashes(self._bf, <int *> hashes.data)
+        if result == 2:
+            raise RuntimeError("Some problem occured while trying to add the hash.")
+        return result  
 	
-
+	
     def add_from_hash(self, hashres):
         self._assert_open()    
         result = cbloomfilter.bloomfilter_AddByHash(self._bf, hashres)

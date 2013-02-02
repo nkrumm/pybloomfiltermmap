@@ -130,6 +130,28 @@ static inline int bloomfilter_GetAllHashes(BloomFilter * bf, Key * key, int * ou
 __attribute__((always_inline))
 
 
+static inline int bloomfilter_AddByAllHashes(BloomFilter * bf, int * hashes)
+{
+    register int i;
+    register int result = 1;
+
+    for (i = bf->num_hashes - 1; i >= 0; --i) {
+    	
+        if (result && !mbarray_Test(bf->array, hashes[i])) {
+            result = 0;
+        }
+        if (mbarray_Set(bf->array, hashes[i])) {
+            return 2;
+        }
+    }
+    if (!result && bf->count_correct) {
+        bf->elem_count ++;
+    }
+    return result;
+
+}
+__attribute__((always_inline))
+
 static inline int bloomfilter_AddByHash(BloomFilter * bf, int hash_res)
 {
     register int result = 1;
@@ -137,7 +159,7 @@ static inline int bloomfilter_AddByHash(BloomFilter * bf, int hash_res)
 		result = 0;
 	}
 	if (mbarray_Set(bf->array, hash_res)) {
-		return 2;
+		return 3;
 	}
     if (!result && bf->count_correct) {
         bf->elem_count ++;

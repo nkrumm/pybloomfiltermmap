@@ -51,6 +51,7 @@ cdef extern from "bloomfilter.h":
      int bloomfilter_GetHash(BloomFilter * bf, Key * key, int hashnumber)
      int bloomfilter_GetAllHashes(BloomFilter * bf, Key * key, int * out_hashes )
      int bloomfilter_AddByHash(BloomFilter * bf, int hash_res)
+     int bloomfilter_AddByAllHashes(BloomFilter * bf, int * hashes)     
      int bloomfilter_Test(BloomFilter * bf, Key * key)
      int bloomfilter_Update(BloomFilter * bf, char * data, int size)
      BloomFilter * bloomfilter_Copy_Template(BloomFilter * src, char * filename, int perms)
