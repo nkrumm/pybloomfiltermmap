@@ -168,6 +168,7 @@ uint32_t _hash_char(uint32_t hash_seed, Key * key) {
 
 CODE TO USE SHA512..
 */
+/*
 #include <openssl/evp.h>
 
 uint32_t _hash_char(uint32_t hash_seed, Key * key) {
@@ -183,6 +184,7 @@ uint32_t _hash_char(uint32_t hash_seed, Key * key) {
     EVP_MD_CTX_cleanup(&ctx);
     return *(uint32_t *)result_buffer;
 }
+*/
 /*
 CODE TO USE md5sum
 
@@ -201,11 +203,12 @@ uint32_t _hash_char(uint32_t hash_seed, Key * key) {
 
 
 / * Code for SuperFast * /
+*/
 #include "superfast.h"
 uint32_t _hash_char(uint32_t hash_seed, Key * key) {
 	return SuperFastHash(key->shash, key->nhash, hash_seed);
 }
-*/
+
 
 #if 0
 int main(int argc, char **argv)
