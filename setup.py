@@ -44,7 +44,7 @@ except ImportError:
 if '--cython' in sys.argv:
     sys.argv.remove('--cython')
 
-ext_modules = [Extension("pybloomfilter",
+ext_modules = [Extension("mgenebloomfilter",
                          ext_files,
                          libraries=['crypto'])]
 
